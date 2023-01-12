@@ -13,7 +13,6 @@ def smooth_scroll(current_scroll_position = 0, iteration_multiplyer = 1):
         current_scroll_position += 100
         driver.execute_script(f"window.scrollTo(0, {current_scroll_position});")
         time.sleep(0.1)
-        new_height = driver.execute_script("return Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight );")
     return current_scroll_position
 
 def export(data,name):
