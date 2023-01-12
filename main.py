@@ -26,14 +26,14 @@ def display(data):
         print(item[1])
         print()
 
-def data_to_dictionary(data):
+def data_to_corpus(data):
     data = [sublist[1] for sublist in data]
     data = ' '.join(data)
     data = re.split(r'[\s,.]', data)
     data = [x.lower() for x in data]
     data = list(set(data))
     data = sorted(data)
-    export(data,'dictionary')
+    export(data,'corpus')
     return(data)
 
 if __name__ == '__main__':
@@ -67,8 +67,8 @@ if __name__ == '__main__':
 
         display(data)
         export(data,'scraping_data')
-        dictionary = data_to_dictionary(data)
-        print(dictionary)
+        corpus = data_to_corpus(data)
+        print(corpus)
 
     except NoSuchElementException:
         print("Content not found")
