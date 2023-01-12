@@ -1,3 +1,4 @@
+import re
 import time
 import pandas as pd
 from selenium import webdriver
@@ -15,9 +16,9 @@ def smooth_scroll(current_scroll_position = 0, iteration_multiplyer = 1):
         new_height = driver.execute_script("return Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight );")
     return current_scroll_position
 
-def export(data):
+def export(data,name):
     df = pd.DataFrame(data)
-    df.to_csv("output/scraping2.csv", index=False, header=True)
+    df.to_csv(f"output/{name}.csv", index=False, header=True)
 
 def display(data):
     for item in data:
@@ -25,6 +26,16 @@ def display(data):
         print(item[0])
         print(item[1])
         print()
+
+def data_to_dictionary(data):
+    data = [sublist[1] for sublist in data]
+    data = ' '.join(data)
+    data = re.split(r'[\s,.]', data)
+    data = [x.lower() for x in data]
+    data = list(set(data))
+    data = sorted(data)
+    export(data,'dictionary')
+    return(data)
 
 if __name__ == '__main__':
     options = Options()
@@ -56,7 +67,9 @@ if __name__ == '__main__':
                     data.append([author,post])
 
         display(data)
-        export(data)
+        export(data,'scraping_data')
+        dictionary = data_to_dictionary(data)
+        print(dictionary)
 
     except NoSuchElementException:
         print("Content not found")
