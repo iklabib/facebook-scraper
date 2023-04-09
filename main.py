@@ -1,36 +1,27 @@
-import time
-import lxml
-import shutil
-import logging
-
-import playwright
-from parsel import Selector
 from playwright.sync_api import sync_playwright
+import time
 
 from post import Post
-from page import Page
-from post import Post
+from walker import GroupWalker
+import LoginPage
+import config
 
-browser_args = {
-    'headless': False, # set as True to hide browser
-    'channel': 'chromium', # chrome or msedge
-    # 'executable_path': "/path/to/browser"
-}
+conf = config.load()
+browser_conf: dict = conf['browser']['chromium']
+browser_args = {'viewport': browser_conf.pop('viewport', {})}
 
 with sync_playwright() as pw:
-    browser = pw.chromium.launch(**browser_args)
-    context = browser.new_context(
-        viewport= {
-            "width": 1920, 
-            "height": 1080,
-        }
-    )
+    browser = pw.chromium.launch(**browser_conf)
+    context = browser.new_context(**browser_args)
 
-    pages = Page('306516256927109', context)
-    for permalinks in pages:
+    LoginPage.login(context)
+    time.sleep(5) # TODO: better waiting
+
+    group = GroupWalker('306516256927109', context)
+    for permalinks in group:
+        print(permalinks)
         for permalink in permalinks:
             url = 'https://m.facebook.com/groups/306516256927109/permalink/' + permalink
             post = Post(url, context)
-            print(post.collect())
             post.close()
     browser.close()
