@@ -3,6 +3,7 @@ from parsel import Selector
 from utils import clean_url
 from playwright.sync_api import sync_playwright
 
+
 class Post:
     def __init__(self, url, context):
         self.url = url
@@ -12,12 +13,12 @@ class Post:
         self.page.goto(self.url)
         self.page.set_default_timeout(2_000)
         self.unfold()
-    
+
     def collect(self):
         collections = {}
         collections['comments'] = self.collect_comments()
         return collections
-    
+
     def collect_comments(self):
         # comment:
         #   - id
@@ -41,7 +42,6 @@ class Post:
 
             comments.append(cmt)
         return comments
-        
 
     def unfold(self):
         content = Selector(text=self.page.content())
@@ -62,29 +62,6 @@ class Post:
             if len(replies) == 0:
                 break
             replies[0].click()
-            
 
     def close(self):
         self.page.close()
-
-if __name__ == "__main__":
-    url = 'https://m.facebook.com/groups/306516256927109/permalink/1193266828252043'
-
-    browser_args = {
-        'headless': False, # set as True to hide browser
-        'channel': 'chromium', # chrome or msedge
-        # 'executable_path': "/path/to/browser"
-    }
-
-    with sync_playwright() as pw:
-        browser = pw.chromium.launch(**browser_args)
-        context = browser.new_context(
-            viewport= {
-                "width": 1920, 
-                "height": 1080,
-            }
-        )
-
-        post = Post(url, context)
-        post.collect()
-        post.close()

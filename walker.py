@@ -1,10 +1,12 @@
 import json
+from typing import List
 from parsel import Selector
 
-class Page:
+class GroupWalker:
     def __init__(self, group_id, context):
         self.base_url = 'https://mbasic.facebook.com'
         self.url = f'{self.base_url}/groups/{group_id}'
+        print(self.url)
         self.context = context
 
         self.page = self.context.new_page()
@@ -21,10 +23,14 @@ class Page:
         self.page.goto(self.next_page)
         content = Selector(text=self.page.content())
         url = content.xpath('//*[@id="m_group_stories_container"]/div/a').xpath('@href').get()
-        self.next_page = self.base_url + url
+
+        if url is None: 
+            self.next_page = None
+        else:
+            self.next_page = self.base_url + url
         return self.collect_permalinks()
 
-    def collect_permalinks(self):
+    def collect_permalinks(self) -> List[str]:
         content = Selector(text=self.page.content())
         elements = content.xpath("//article[@class='be bg br']/@data-ft").getall()
         permalinks = [json.loads(element)['mf_story_key'] for element in elements]
