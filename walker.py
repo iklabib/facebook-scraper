@@ -32,6 +32,6 @@ class GroupWalker:
 
     def collect_permalinks(self) -> List[str]:
         content = Selector(text=self.page.content())
-        elements = content.xpath("//article[@class='be bg br']/@data-ft").getall()
+        elements = content.xpath("//article[@class='dk dm dx']").xpath("@data-ft").getall()
         permalinks = [json.loads(element)['mf_story_key'] for element in elements]
         return permalinks

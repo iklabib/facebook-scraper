@@ -26,37 +26,41 @@ class Post:
         #   - photos 
         #   - reactions
         #   - replies
+
         comments = []
         content = Selector(text=self.page.content())
-        comment_section = content.xpath('//div[@class="_2b06"]')
+        comment_section = content.xpath('//div[@class="x1y1aw1k xn6708d xwib8y2 x1ye3gou"]')
+
         for comment in comment_section:
-            comment_id = comment.xpath('div[2]').attrib['data-commentid']
-            username = comment.xpath('div[1]/text()').get()
-            message = comment.xpath('div[2]/text()').get()
+            # comment_id = comment.xpath('[@class="xt0psk2"]').attrib['href']
+            username = comment.xpath('span[@class="x3nfvp2"]/span/text()').get()
+            message = comment.xpath('div[@class="x11i5rnm xat24cr x1mh8g0r x1vvkbs xdj266r"]/div/text()').get()
             cmt = {
-                'id': comment_id,
+                # 'id': comment_id,
                 'username': username,
                 'message': message,
                 # 'photos' : photos,
                 }
-
             comments.append(cmt)
         return comments
 
     def unfold(self):
+        see_prev_selector = "div[@class='x78zum5 x1iyjqo2 x21xpn4 x1n2onr6']"
+
         content = Selector(text=self.page.content())
-        see_prev_selector = "//div[@class='async_elem']"
+        content = content.xpath("//div[@class='x1jx94hy x12nagc']")
         for _ in range(3):
             if len(content.xpath(see_prev_selector)) == 0:
                 break
             self.page.locator(see_prev_selector).click()
             content = Selector(text=self.page.content())
+            content = content.xpath("//div[@class='x1jx94hy x12nagc']")
 
-        replies_selector = "//div[@class='_2b1h async_elem']"
+        replies_selector = "div[@class='x78zum5 x1iyjqo2 x21xpn4 x1n2onr6']"
         if len(content.xpath(replies_selector)) == 0:
             return
 
-        # yes it is silly, but it's work
+        # yes it is silly, but it's working
         while True:
             replies = self.page.locator(replies_selector).all()
             if len(replies) == 0:
